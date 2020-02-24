@@ -10,16 +10,18 @@ using std::vector;
 
 size_t k = 0;
 vector <size_t> L;
+vector <float> U;
+vector <double> X;
 size_t N = 0;
 size_t M = 0;
-void Vvod() {
-    bool fl = true;
+bool fl = true;
+void Vvod() {  
 //Ввод количество каналов управления
     while (fl)
     {
         cout << "Vvedite kolinchestvo kanalov ypravlenia(1-4)" << "\n";
         cin >> k;
-        if (k <= 4 && k >= 1)
+        if (k < 5 && k > 0)
         {
             fl = false;
         }
@@ -29,6 +31,7 @@ void Vvod() {
         }
     }
     L.resize(k);
+    U.resize(k);
 //Ввод использующихся каналов
     for (size_t i = 0; i < k; i++)
     {
@@ -48,9 +51,10 @@ void Vvod() {
         }
     }
     fl = true;
-    //Ввод цисла повторений измерений
+    //Ввод числа повторений измерений
         cout << "Vvedite kol-vo povtoreniy";
         cin >> N;
+        X.resize(N);
     //Ввод номера датчика
         while (fl)
         {
@@ -65,8 +69,20 @@ void Vvod() {
                 cout << "ERROR nepravilniy diapazon" << "\n";
             }
         }
+        fl = true;
 
 }
+//Рассчёт среднего значения
+double MiddleSize() 
+{
+    double s=0;
+    for (size_t i = 0; i < N; i++)
+    {
+        s += X[i];
+    }
+    return(s/N);
+}
+
 
 int main() {
     // Инициализация ОУ.
@@ -85,6 +101,81 @@ int main() {
         cout << ys[i] << '\t'; //Вывод результатов измерений в консоль
     }*/
     Vvod();
- 
+
+    //Подача значений на каналы управлений
+    for (size_t i = 0; i < k; i++)
+    {
+        fl = true;
+        while (fl)
+        {
+            switch (L[i])
+            {               
+            case 7:
+                cout << "Vvedite ypravlenie(-70;70)";
+                cin >>U[i];
+                if (U[i]>=-70 && U[i]<=70)
+                {
+                    fl = false;
+                }
+                else
+                {
+                    cout << "ERROR nepravilniy diapozon";
+                }
+                break;
+            case 8:
+                cout << "Vvedite ypravlenie(-3;3)";
+                cin >> U[i];
+                if (U[i] >= -3 && U[i] <= 3)
+                {
+                    fl = false;
+                }
+                else
+                {
+                    cout << "ERROR nepravilniy diapozon";
+                }
+                break;
+            case 9:
+                cout << "Vvedite ypravlenie(-5;5)";
+                cin >> U[i];
+                if (U[i] >= -5 && U[i] <= 5)
+                {
+                    fl = false;
+                }
+                else
+                {
+                    cout << "ERROR nepravilniy diapozon";
+                }
+                break;
+            case 10:
+                cout << "Vvedite ypravlenie(-70;70)";
+                cin >> U[i];
+                if (U[i] >= -2.5 && U[i] <= 2.5)
+                {
+                    fl = false;
+                }
+                else
+                {
+                    cout << "ERROR nepravilniy diapozon";
+                }
+                break;
+            }
+        }
+    }
+    //Конец подачи на конал управления
+    //Подача на объект управляющего воздействия
+    for (size_t i = 0; i < k; i++)
+    {
+        plant_control(L[i], U[i], plant);
+    }
+    //Опрос датчиков
+    for (size_t i = 0; i < N; i++)
+    {
+        X[i] = plant_measure(M, plant);
+    }
+    for (size_t i = 0; i < N; i++)
+    {
+    cout << X[i];
+    }
+    cout << MiddleSize();
 }
 
