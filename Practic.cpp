@@ -70,9 +70,9 @@ void Vvod() {
     //Ввод номера датчика
         while (fl)
         {
-            cout << "Vvedite nomer  datchika  (1-6)";
+            cout << "Vvedite kanal oprosa (11-99)";
             cin >> M;
-            if (M < 7 && M > 0)
+            if (M <100 && M >10)
             {
                 fl = false;
             }
@@ -188,7 +188,7 @@ int main() {
         }
         for (size_t i = 0; i < N; i++)
         {
-            cout << "X[" << i << "]=" << X[i] << "\n";
+            cout << "X[" << i+1 << "]=" << X[i] << "\n";
         }
         cout << "X=" << MiddleSize() << "\n";
         cout << "Push '1' if you want to continue or any different key to quit"<<"\n";
@@ -200,5 +200,3 @@ int main() {
         }
     }
 }
-
-
