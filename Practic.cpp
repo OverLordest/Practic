@@ -1,25 +1,27 @@
 ﻿#include "plant.h"
-//#include <conio.h> 
+#include <conio.h> 
 //#include <discpp.h>
-
 #include <cmath>
 #include <vector>
 #include <iostream>
 using namespace std;
 using std::vector;
 
-size_t k = 0;
-vector <size_t> L;
-vector <float> U;
-vector <double> X;
-size_t N = 0;
-size_t M = 0;
+int k = 0;//Количество каналов управления
+vector <size_t> L;//Номера используемых каналов управления
+vector <double> U;//Управляющие воздействия пользователя
+vector <double> X;//Измеряемые значения
+size_t N = 0;//Число повторений измерений
+size_t M = 0;//Номер датчика, канал опроса
+
+//Ввод изначальных данных
 void Vvod() {  
+    setlocale(LC_ALL,"Russian");
     bool fl = true;
 //Ввод количество каналов управления
     while (fl)
     {
-        cout << "Vvedite kolinchestvo kanalov ypravlenia(1-4)" << "\n";
+        cout << "Введите количество канлов управления(1-4)" << "\n";
         cin >> k;
         if (k < 5 && k > 0)
         {
@@ -27,7 +29,7 @@ void Vvod() {
         }
         else
         {
-            cout << "ERROR nepravilniy diapazon" << "\n";
+            cout << "ERROR" << "\n";
         }
     }
     L.resize(k);
@@ -38,7 +40,7 @@ void Vvod() {
         fl = true;
         while (fl)
         {
-            cout << "Vvedite nomer kanala L[" << i << "] dlya ispolzovania(7-10)";
+            cout << "Введите номер канала L[" << i << "] для использования(7-10)" << "\n";
             cin >> L[i];
             if (L[i] < 11 && L[i] > 6)
             {
@@ -46,13 +48,13 @@ void Vvod() {
             }
             else
             {
-                cout << "ERROR nepravilniy diapazon" << "\n";
+                cout << "ERROR" << "\n";
             }
         }
     }
     fl = true;
     //Ввод числа повторений измерений
-        cout << "Vvedite kol-vo povtoreniy";
+        cout << "Введите количество повторений измерений" << "\n";
         while (fl)
         {       
             cin >> N;
@@ -62,7 +64,7 @@ void Vvod() {
             }
             else
             {
-                cout << "ERROR vvedite naturalnoe chislo" << "\n";
+                cout << "ERROR Введите натуральное число" << "\n";
             }
         }             
         fl = true;
@@ -70,7 +72,7 @@ void Vvod() {
     //Ввод номера датчика
         while (fl)
         {
-            cout << "Vvedite kanal oprosa (11-99)";
+            cout << "Введитк канал опроса (11-99)" << "\n";
             cin >> M;
             if (M <100 && M >10)
             {
@@ -78,13 +80,13 @@ void Vvod() {
             }
             else
             {
-                cout << "ERROR nepravilniy diapazon" << "\n";
+                cout << "ERROR" << "\n";
             }
         }
         fl = true;
 
 }
-//Рассчёт среднего значения
+//Рассчёт среднего значения для X по N
 double MiddleSize() 
 {
     double s=0;
@@ -94,104 +96,106 @@ double MiddleSize()
     }
     return(s/N);
 }
+//Подача значений на каналы управлений
+void Control(size_t i)
+{
+    setlocale(LC_ALL, "Russian");
+    bool fl = true;
+    while (fl)
+    {
+        switch (L[i])
+        {
+        case 7:
+            cout << "Введите управление (-70;70)" << "\n";
+            cin >> U[i];
+            if (U[i] >= -70 && U[i] <= 70)
+            {
+                fl = false;
+            }
+            else
+            {
+                cout << "ERROR";
+            }
+            break;
+        case 8:
+            cout << "Введите управление (-3;3)" << "\n";
+            cin >> U[i];
+            if (U[i] >= -3 && U[i] <= 3)
+            {
+                fl = false;
+            }
+            else
+            {
+                cout << "ERROR";
+            }
+            break;
+        case 9:
+            cout << "Введите управление (-5;5)" << "\n";
+            cin >> U[i];
+            if (U[i] >= -5 && U[i] <= 5)
+            {
+                fl = false;
+            }
+            else
+            {
+                cout << "ERROR";
+            }
+            break;
+        case 10:
+            cout << "Введите управление (-2.5;2.5)" << "\n";
+            cin >> U[i];
+            if (U[i] >= -2.5 && U[i] <= 2.5)
+            {
+                fl = false;
+            }
+            else
+            {
+                cout << "ERROR";
+            }
+            break;
+        }
+    }
+        
+}
 
 
 int main() {
-    // Инициализация ОУ.
+    setlocale(LC_ALL, "Russian");
     Plant plant;
     plant_init(plant);
-    /*// Получение экспериментальных данных.
-    const int channel = 64;
-    const size_t steps = 100;
-
-    vector<double> xs(steps);
-    vector<double> ys(steps);
-
-    for (size_t i = 0; i < steps; i++) {
-        xs[i] = i;
-        ys[i] = plant_measure(channel, plant);
-        cout << ys[i] << '\t'; //Вывод результатов измерений в консоль
-    }*/
     Vvod();
     bool check = true;
     while (check)
     {
         //Подача значений на каналы управлений
         for (size_t i = 0; i < k; i++)
-        {
-            bool fl = true;
-            while (fl)
-            {
-                switch (L[i])
-                {
-                case 7:
-                    cout << "Vvedite ypravlenie(-70;70)";
-                    cin >> U[i];
-                    if (U[i] >= -70 && U[i] <= 70)
-                    {
-                        fl = false;
-                    }
-                    else
-                    {
-                        cout << "ERROR nepravilniy diapozon";
-                    }
-                    break;
-                case 8:
-                    cout << "Vvedite ypravlenie(-3;3)";
-                    cin >> U[i];
-                    if (U[i] >= -3 && U[i] <= 3)
-                    {
-                        fl = false;
-                    }
-                    else
-                    {
-                        cout << "ERROR nepravilniy diapozon";
-                    }
-                    break;
-                case 9:
-                    cout << "Vvedite ypravlenie(-5;5)";
-                    cin >> U[i];
-                    if (U[i] >= -5 && U[i] <= 5)
-                    {
-                        fl = false;
-                    }
-                    else
-                    {
-                        cout << "ERROR nepravilniy diapozon";
-                    }
-                    break;
-                case 10:
-                    cout << "Vvedite ypravlenie(-2.5;2.5)";
-                    cin >> U[i];
-                    if (U[i] >= -2.5 && U[i] <= 2.5)
-                    {
-                        fl = false;
-                    }
-                    else
-                    {
-                        cout << "ERROR nepravilniy diapozon";
-                    }
-                    break;
-                }
-            }
+        {   
+                Control(i);
         }
-        //Конец подачи на конал управления
+
         //Подача на объект управляющего воздействия
         for (size_t i = 0; i < k; i++)
         {
             plant_control(L[i], U[i], plant);
         }
+
         //Опрос датчиков
         for (size_t i = 0; i < N; i++)
         {
             X[i] = plant_measure(M, plant);
         }
+
+        //Вывод Опрошенных датчиков
         for (size_t i = 0; i < N; i++)
         {
             cout << "X[" << i+1 << "]=" << X[i] << "\n";
         }
+
+        //Вывод среднего значений опрошенных датчиков
         cout << "X=" << MiddleSize() << "\n";
-        cout << "Push '1' if you want to continue or any different key to quit"<<"\n";
+
+
+        cout << "Нажмите '1' если хотите повторить или что-нибудь другое чтобы выйти"<<"\n";
         int C = 0;
         cin >> C;
         if (!(C == 1))
